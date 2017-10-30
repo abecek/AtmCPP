@@ -1,5 +1,24 @@
 #include "Company.h"
 
+std::string Account::getAccountNumber(){
+    return this->accountNumber;
+}
+
+Account Account::setAccountNumber(std::string number){
+    this->accountNumber = number;
+    return *this;
+}
+
+float Account::getMoneyAmount(){
+    return this->moneyAmount;
+}
+
+void Account::setMoneyAmount(float amount)
+{
+    this->moneyAmount = amount;
+}
+
+
 Company::Company(){
     //ctor
 }

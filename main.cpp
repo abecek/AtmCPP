@@ -15,7 +15,6 @@ int main()
 {
     Address BankAddress("Polska", "Lodz", "Pilsudskiego", "6");
     BankAddress.setPostCode("90-200");
-
     Company *AtmOwner = new Company("XYZ Bank", BankAddress);
 
     Address *AtmAddress = new Address("Polska", "Lodz", "Piotrkowska", "43");
@@ -32,33 +31,47 @@ int main()
 
     vector<Language> possibleLangs = CashMachine->getLanguageList();
 
-    char c;
-    while(c != ESCAPE){
-        cout << "Witamy w bankomacie." << endl << endl;
+    Address *UserAddress = new Address("Polska", "Zgierz", "Losowa", "123");
+    //User *Client = new User("Piotr", "Kowalski");
+    User *Client = new User("Piotr", "Kowalski", "", UserAddress);
+    //cout << Client->toString();
 
-        Language chosenLang;
-        unsigned int x = 0;
-        do{
-            cout << "Wybierz jezyk:" << endl;
-            for(int i = 0; i < possibleLangs.size(); i++){
-                cout << i+1 << ". - " << possibleLangs.at(i).name << endl;
-            }
-            cout << endl << "Numer: ";
-            cin >> x;
-            if(x < 1 || x > possibleLangs.size()){
-                cout << endl << "Zle dane" << endl;
-                continue;
-            }
+    Address ClientBankAddress("Polska", "Warszawa", "Aleje Jerozolimskie", "253");
+    Company *ClientBank = new Company("ZYX BigBank", ClientBankAddress);
+    Card *AtmCard = new Card(Client, ClientBank, "1234-5678-9012-3456", "", 0.0, cardType::debit);
+    CashMachine->loadCard(AtmCard);
+    //cout << CashMachine->getCard()->toString();
 
-            chosenLang = possibleLangs.at(x-1);
-            CashMachine->setLanguage(chosenLang);
-            cout << endl << "Wybrano jezyk: " << CashMachine->getLanguage().name << endl;
+    cout << endl << "Witamy w bankomacie." << endl << endl;
 
-        }while(x < 1 || x > possibleLangs.size());
+    if(CashMachine->isCardLoaded()) {
+        char c;
+        while(c != ESCAPE) {
+            Language chosenLang;
+            unsigned int x = 0;
+            do{
+                cout << "Wybierz jezyk:" << endl;
+                for(unsigned int i = 0; i < possibleLangs.size(); i++){
+                    cout << i+1 << ". - " << possibleLangs.at(i).name << endl;
+                }
+                cout << endl << "Numer: ";
+                cin >> x;
+                if(x < 1 || x > possibleLangs.size()){
+                    cout << endl << "Zle dane" << endl;
+                    continue;
+                }
 
-        cout << endl << endl << "Nacisnij ESC, by przerwac lub inny przycisk, by kontynuowac." << endl;
-        c = getch();
+                chosenLang = possibleLangs.at(x-1);
+                CashMachine->setLanguage(chosenLang);
+                cout << endl << "Wybrano jezyk: " << CashMachine->getLanguage().name << endl;
+
+            }while(x < 1 || x > possibleLangs.size());
+
+            cout << endl << endl << "Nacisnij ESC, by przerwac lub inny przycisk, by kontynuowac." << endl;
+            c = getch();
+        }
     }
+
 
     return 0;
 }

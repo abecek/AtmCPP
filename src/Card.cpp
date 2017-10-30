@@ -5,7 +5,7 @@ Card::Card()
 {
     //ctor
 }
-Card::Card(User cardOwner, Company cardDist, std::string cardNr, std::string plainPIN, float currentMoneyAmount, cardType type):
+Card::Card(User *cardOwner, Company *cardDist, std::string cardNr, std::string plainPIN, float currentMoneyAmount, cardType type):
     cardOwner(cardOwner),
     cardDistributor(cardDist),
     cardNumber(cardNr),
@@ -15,12 +15,12 @@ Card::Card(User cardOwner, Company cardDist, std::string cardNr, std::string pla
 
 }
 
-User Card::getCardOwner()
+User *Card::getCardOwner()
 {
     return cardOwner;
 }
 
-Company Card::getCardDistributor()
+Company *Card::getCardDistributor()
 {
     return cardDistributor;
 }
@@ -68,10 +68,13 @@ Card::~Card()
 std::string Card::toString()
 {
     std::string output = "";
-    output += " Card - CardNumber: " + cardNumber + ", currentState: ";
-    output += ", isAuthenticated: " + (isAuthenticated == true) ? "true" : "false";
-    output += ", isBlocked: " + (isBlocked == true) ? "true" : "false";
-    switch(type){
+    output += " Card - CardNumber: " + cardNumber + "\n, currentState: " + "\n, isAuthenticated: ";
+    output += (isAuthenticated == true) ? "true" : "false";
+    output += "\n, isBlocked: ";
+    output += (isBlocked == true) ? "true" : "false";
+
+    // todo: have to change switch to if because for example "cardType::credit:" wont be working
+    switch(this->type){
         credit:
             output += ", cardType: credit";
             break;
@@ -82,6 +85,13 @@ std::string Card::toString()
             output += ", cardType: payment";
             break;
     }
+    if(cardOwner != nullptr) {
+        output += "\n User - ( " + cardOwner->toString() + " )";
+    }
+    if(cardDistributor != nullptr) {
+        output += "\n Bank - ( " + cardDistributor->toString() + " )";
+    }
+
 
     return output;
 }

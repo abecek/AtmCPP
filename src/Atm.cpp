@@ -31,7 +31,7 @@ void Atm::setLanguage(Language lg)
 
 void Atm::setId(int id)
 {
-
+    this->id = id;
 }
 
 int Atm::getId()
@@ -62,6 +62,10 @@ Company* Atm::getOwner()
 void Atm::loadCard(Card *card)
 {
     this->card = card;
+}
+
+Card *Atm::getCard(){
+    return this->card;
 }
 
 void Atm::discardCard()

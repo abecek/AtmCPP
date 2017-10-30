@@ -18,10 +18,10 @@ class Card
 {
     public:
         Card();
-        Card(User cardOwner, Company cardDist, std::string cardNr, std::string plainPIN, float currentMoneyAmount, cardType type);
+        Card(User *cardOwner, Company *cardDist, std::string cardNr, std::string plainPIN, float currentMoneyAmount, cardType type);
 
-        User getCardOwner();
-        Company getCardDistributor();
+        User *getCardOwner();
+        Company *getCardDistributor();
         std::string getCardNumber();
 
         Hashed *getHashedPIN();
@@ -36,10 +36,10 @@ class Card
         virtual ~Card();
     protected:
     private:
-        User cardOwner;
-        Company cardDistributor;
+        User *cardOwner;
+        Company *cardDistributor;
         std::string cardNumber;
-        Hashed *PIN;
+        Hashed *PIN = nullptr;
         float currentMoneyAmount = 0;
         bool isAuthenticated = false;
         bool isBlocked = false;;

@@ -28,6 +28,7 @@ class Atm
         Company* getOwner();
 
         void loadCard(Card *card);
+        Card *getCard();
         void discardCard();
         void rejectCard();
         bool isCardLoaded();
@@ -50,9 +51,9 @@ class Atm
         bool isOn = true;
         std::vector<Language> langList;
         Language lang;
-        Address *localization;
-        Company *owner;
-        Card *card;
+        Address *localization = nullptr;
+        Company *owner = nullptr;
+        Card *card = nullptr;
     private:
 
 };
