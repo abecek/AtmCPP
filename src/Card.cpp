@@ -5,11 +5,11 @@ Card::Card()
 {
     //ctor
 }
-Card::Card(User *cardOwner, Company *cardDist, std::string cardNr, std::string plainPIN, float currentMoneyAmount, cardType type):
+Card::Card(User *cardOwner, unsigned int cardDistId, std::string cardNr, std::string accountNr, cardType type):
     cardOwner(cardOwner),
-    cardDistributor(cardDist),
+    cardDistributorId(cardDistId),
     cardNumber(cardNr),
-    currentMoneyAmount(currentMoneyAmount),
+    accountNumber(accountNr),
     type(type)
 {
 
@@ -20,9 +20,9 @@ User *Card::getCardOwner()
     return cardOwner;
 }
 
-Company *Card::getCardDistributor()
+unsigned int Card::getCardDistributorId()
 {
-    return cardDistributor;
+    return cardDistributorId;
 }
 
 std::string Card::getCardNumber()
@@ -30,9 +30,9 @@ std::string Card::getCardNumber()
     return cardNumber;
 }
 
-Hashed *Card::getHashedPIN()
+std::string Card::getAccountNumber()
 {
-    return this->PIN;
+    return accountNumber;
 }
 
 bool Card::getIsAuthenticated()
@@ -68,7 +68,9 @@ Card::~Card()
 std::string Card::toString()
 {
     std::string output = "";
-    output += " Card - CardNumber: " + cardNumber + "\n, currentState: " + "\n, isAuthenticated: ";
+    output += " Card - CardNumber: " + cardNumber + "\n";
+    output += "AccountNumber: " + accountNumber + "\n";
+    output += ", currentState: \n, isAuthenticated: ";
     output += (isAuthenticated == true) ? "true" : "false";
     output += "\n, isBlocked: ";
     output += (isBlocked == true) ? "true" : "false";
@@ -88,10 +90,10 @@ std::string Card::toString()
     if(cardOwner != nullptr) {
         output += "\n User - ( " + cardOwner->toString() + " )";
     }
-    if(cardDistributor != nullptr) {
-        output += "\n Bank - ( " + cardDistributor->toString() + " )";
-    }
+    //if(cardDistributorId != 0) {
+        output += "\n CompanyId - ( " + SSTR(cardDistributorId) + " )";
+    //}
 
-
+    output += "\n";
     return output;
 }

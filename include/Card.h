@@ -1,12 +1,14 @@
 #include <iostream>
 #include <string>
+#include <sstream>
 
 #include "User.h"
-#include "Company.h"
-#include "Hashed.h"
 
 #ifndef CARD_H
 #define CARD_H
+
+#define SSTR( x ) static_cast< std::ostringstream & >( \
+        ( std::ostringstream() << std::dec << x ) ).str()
 
 enum cardType{
     credit,
@@ -18,13 +20,13 @@ class Card
 {
     public:
         Card();
-        Card(User *cardOwner, Company *cardDist, std::string cardNr, std::string plainPIN, float currentMoneyAmount, cardType type);
+        Card(User *cardOwner, unsigned int cardDistId, std::string cardNr, std::string accountNr, cardType type);
 
         User *getCardOwner();
-        Company *getCardDistributor();
+        unsigned int getCardDistributorId();
         std::string getCardNumber();
+        std::string getAccountNumber();
 
-        Hashed *getHashedPIN();
         //void setIsAuthenticated(bool flag);
         bool getIsAuthenticated();
         void setIsBlocked(bool flag);
@@ -37,10 +39,10 @@ class Card
     protected:
     private:
         User *cardOwner;
-        Company *cardDistributor;
+        unsigned int cardDistributorId;
         std::string cardNumber;
-        Hashed *PIN = nullptr;
-        float currentMoneyAmount = 0;
+        std::string accountNumber;
+
         bool isAuthenticated = false;
         bool isBlocked = false;;
         cardType type;
