@@ -16,6 +16,8 @@ class Account{
                 Account();
                 Account(unsigned int id, std::string pin = "");
 
+                static unsigned int pinLength;
+
                 std::string getAccountNumber();
                 Account setAccountNumber(std::string number);
                 float getMoneyAmount();
@@ -38,6 +40,7 @@ class Company
     private:
         unsigned int accountsCount = 0;
         unsigned int companyId;
+
         static unsigned int banksCount;
 
         std::string IBAN = "PL";
@@ -47,7 +50,6 @@ class Company
         std::map<std::string, Account> accountsList;
 
     public:
-
         static std::string generateRandomPIN(unsigned int length);
         Company();
         Company(std::string name, Address address);

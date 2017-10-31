@@ -2,6 +2,8 @@
 #include <string>
 #include <cstdlib>
 
+unsigned int Account::pinLength = 6;
+
 Account::Account()
 {
 
@@ -11,11 +13,11 @@ Account::Account(unsigned int id, std::string pin)
 {
     this->accountId = id;
     if(pin == "") {
-        this->cardPIN = Company::generateRandomPIN(8);
+        this->cardPIN = Company::generateRandomPIN(Account::pinLength);
     }
     else {
-        if(pin.length() > 8) {
-            pin = pin.substr(0, 8);
+        if(pin.length() > Account::pinLength) {
+            pin = pin.substr(0, Account::pinLength);
         }
         this->cardPIN = pin;
     }
@@ -63,6 +65,10 @@ void Account::setMoneyAmount(float amount)
 {
     this->moneyAmount = amount;
 }
+
+
+
+
 
 unsigned int Company::banksCount = 0;
 

@@ -36,9 +36,10 @@ int main()
     //cout << Client1->toString();
 
     User *Client1 = new User("Piotr", "Kowalski", "", UserAddress1);
+    /*
     User *Client2 = new User("Rafal", "Wszedobylski");
     User *Client3 = new User("Marcin", "JakisTam");
-
+    */
 
     Address ClientBankAddress("Polska", "Warszawa", "Aleje Jerozolimskie", "253");
     Company *ClientBank = new Company("ZYX BigBank", ClientBankAddress);
@@ -62,9 +63,8 @@ int main()
     */
 
     cout << endl << "Witamy w bankomacie." << endl << endl;
-    //CashMachine->loadCard(card1);
-
-    cout << CashMachine->getCard()->toString();
+    CashMachine->loadCard(card1);
+    //cout << CashMachine->getCard()->toString();
 
     if(CashMachine->isCardLoaded()) {
         char c;
@@ -88,7 +88,7 @@ int main()
                 CashMachine->setLanguage(chosenLang);
                 cout << endl << "Wybrano jezyk: " << CashMachine->getLanguage().name << endl;
 
-                cout << "Wprowadz PIN:";
+                cout << "Wprowadz PIN: ";
                 cin >> plainPIN;
                 CashMachine->loadPlainPIN(plainPIN);
 
@@ -100,8 +100,9 @@ int main()
         }
     }
     else {
-        cout << "Wloz karte do bankomatu by kontynuowac" << endl;
+        cout << "Wloz karte do bankomatu." << endl;
     }
+
 
 
     return 0;
