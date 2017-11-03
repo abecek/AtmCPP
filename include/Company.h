@@ -15,7 +15,6 @@ class Account{
             public:
                 Account();
                 Account(unsigned int id, std::string pin = "");
-
                 static unsigned int pinLength;
 
                 std::string getAccountNumber();
@@ -23,10 +22,11 @@ class Account{
                 float getMoneyAmount();
                 void setMoneyAmount(float amount);
                 unsigned int getAccountId();
-                std::string getCardPIN();
 
-                Card *generateCardForAccount(User *cardOwner, unsigned int cardDistId, std::string cardNr, std::string accountNr, cardType type);
+                std::string getCardPIN();
                 Card *getCard();
+                void setCard(Card *card);
+
             private:
                 unsigned int accountId;
                 std::string accountNumber;
@@ -49,18 +49,21 @@ class Company
         bool isBank = true;
         std::map<std::string, Account> accountsList;
 
+        Account* getAccount(std::string accountNumber);
+        std::map<std::string, Account> getAccountsList();
     public:
         static std::string generateRandomPIN(unsigned int length);
         Company();
         Company(std::string name, Address address);
         std::string toString();
-
         unsigned int getCompanyId();
 
-        Account* createNewAccount(float moneyAmount = 0);
+        std::string createNewAccount(float moneyAmount = 0);
         void addAccount(Account *account);
-        Account getAccount(std::string accountNumber);
-        std::map<std::string, Account> getAccountsList();
+        Card *generateCardForAccount(User *cardOwner, std::string cardNr, std::string accountNr, cardType type);
+
+        bool checkPIN(Card *card, std::string plainPIN);
+        float getMoneyFromAccount(std::string accountNumber);
 
         std::string getAccountsAsString();
         void printAccountsList();

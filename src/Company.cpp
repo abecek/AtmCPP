@@ -1,6 +1,7 @@
 #include "Company.h"
 #include <string>
 #include <cstdlib>
+#include <stdexcept>
 
 unsigned int Account::pinLength = 6;
 
@@ -24,15 +25,14 @@ Account::Account(unsigned int id, std::string pin)
 
 }
 
-Card *Account::generateCardForAccount(User *cardOwner, unsigned int cardDistId, std::string cardNr, std::string accountNr, cardType type)
+Card* Account::getCard()
 {
-    this->card = new Card(cardOwner, cardDistId, cardNr, accountNr, type);
     return this->card;
 }
 
-Card *Account::getCard()
+void Account::setCard(Card *card)
 {
-    return this->card;
+    this->card = card;
 }
 
 unsigned int Account::getAccountId()
@@ -67,9 +67,6 @@ void Account::setMoneyAmount(float amount)
 }
 
 
-
-
-
 unsigned int Company::banksCount = 0;
 
 Company::Company()
@@ -91,7 +88,9 @@ Company::Company(std::string name, Address address): name(name), address(address
 std::string Company::toString()
 {
     std::string output = "";
-    output += " Company - Name: " + name + ", isBank: ";
+    output += " Company - Name: " + name;
+    output += ", CompanyId: " + SSTR(companyId);
+    output += "\n isBank: ";
     output += (isBank == true) ? "true" : "false";
     output += ", address: ( " + address.toString() + " )";
 
@@ -104,7 +103,7 @@ unsigned int Company::getCompanyId()
     return this->companyId;
 }
 
-Account* Company::createNewAccount(float moneyAmount)
+std::string Company::createNewAccount(float moneyAmount)
 {
     //std::string id = std::to_string(this->bankId);
     std::string bId = SSTR(this->companyId);
@@ -126,13 +125,51 @@ Account* Company::createNewAccount(float moneyAmount)
     this->addAccount(acc);
     this->accountsCount++;
 
-    return acc;
+    return acc->getAccountNumber();
 }
 
 void Company::addAccount(Account *account)
 {
     this->accountsList[account->getAccountNumber()] = *account;
 }
+
+Account* Company::getAccount(std::string accNum)
+{
+    Account *acc = nullptr;
+    try{
+        acc = &accountsList.at(accNum);
+    }
+    catch(const std::out_of_range &oor) {
+        std::cout << "Account with this accountNumber: " << accNum << ", does not exist in this Company/Bank: ";
+        std::cout << this->name << ", id: " << this->companyId << std::endl;
+    }
+
+    return acc;
+}
+
+Card* Company::generateCardForAccount(User *cardOwner, std::string cardNr, std::string accountNr, cardType type)
+{
+    Account *acc = this->getAccount(accountNr);
+    Card *card = new Card(cardOwner, this->companyId, cardNr, accountNr, type);
+    acc->setCard(card);
+
+    return card;
+}
+
+bool Company::checkPIN(Card *card, std::string plainPIN)
+{
+    Account *acc = this->getAccount(card->getAccountNumber());
+    if(acc->getCardPIN() == plainPIN) return true;
+
+    return false;
+}
+
+float Company::getMoneyFromAccount(std::string accountNumber)
+{
+    Account *acc = this->getAccount(accountNumber);
+    return acc->getMoneyAmount();
+}
+
 
 std::string Company::generateRandomPIN(unsigned int length){
     std::string str = "";

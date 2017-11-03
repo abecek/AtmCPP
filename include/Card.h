@@ -36,7 +36,6 @@ class Card
 
         std::string toString();
         virtual ~Card();
-    protected:
     private:
         User *cardOwner;
         unsigned int cardDistributorId;
@@ -46,7 +45,6 @@ class Card
         bool isAuthenticated = false;
         bool isBlocked = false;;
         cardType type;
-
 
 };
 

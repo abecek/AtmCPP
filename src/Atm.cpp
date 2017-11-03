@@ -1,5 +1,6 @@
 #include "Atm.h"
 #include <string>
+#include <stdexcept>
 
 Atm::Atm()
 {
@@ -12,6 +13,8 @@ Atm::Atm()
 
     this->langList.push_back(pl);
     this->langList.push_back(eng);
+
+    this->safe = new AtmSafe();
 }
 
 std::vector<Language> Atm::getLanguageList()
@@ -39,9 +42,19 @@ int Atm::getId()
     return this->id;
 }
 
+void Atm::addToSafe(std::map<unsigned int,unsigned int> *safeContent)
+{
+    this->safe->addContent(safeContent);
+}
+
+AtmSafe* Atm::getSafe()
+{
+    return this->safe;
+}
+
 void Atm::setLocalization(Address *address)
 {
-
+    this->localization = address;
 }
 
 Address Atm::getLocalization()
@@ -51,7 +64,7 @@ Address Atm::getLocalization()
 
 void Atm::setOwner(Company *company)
 {
-
+    this->owner = company;
 }
 
 Company* Atm::getOwner()
@@ -96,15 +109,51 @@ void Atm::loadPlainPIN(std::string PIN)
     this->plainPin = PIN;
 }
 
-bool Atm::checkPIN(Hashed &hashMachine)
+bool Atm::checkPIN()
 {
-    return true;
+    if(this->plainPin == "") return false;
+
+    try {
+        Company *company = this->supportedCompaniesList.at(this->card->getCardDistributorId());
+        //std::cout << company->toString() << std::endl;
+        //company->printAccountsList();
+
+        this->isAuthorized = company->checkPIN(this->card, this->plainPin);
+    }
+    catch(const std::out_of_range &oor) {
+        std::cout << "Your card is not supported in this ATM." << std::endl;
+    }
+
+    return this->isAuthorized;
+}
+
+bool Atm::getIsAuthorized()
+{
+    return this->isAuthorized;
+}
+
+float Atm::getAvailableMoney()
+{
+    if(this->isAuthorized && this->card != nullptr) {
+        Company *comp = supportedCompaniesList.at(this->card->getCardDistributorId());
+        this->availableMoneyAmount = comp->getMoneyFromAccount(this->card->getAccountNumber());
+    }
+
+    return this->availableMoneyAmount;
+}
+
+void Atm::addSupportedCompanyToList(Company *comp)
+{
+    this->supportedCompaniesList[comp->getCompanyId()] = comp;
 }
 
 bool Atm::makeWithdraw(unsigned int amount, bool printContribution)
 {
+    this->safe->getMoneyFromSafe(amount);
     return true;
 }
+
+
 
 void Atm::printAtm()
 {
