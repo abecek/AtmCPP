@@ -36,7 +36,7 @@ class Atm
 
         void loadCard(Card *card);
         Card *getCard();
-        void discardCard();
+        void pullOutCard();
         void rejectCard();
         bool isCardLoaded();
 

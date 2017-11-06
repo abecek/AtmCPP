@@ -63,7 +63,8 @@ class Company
         Card *generateCardForAccount(User *cardOwner, std::string cardNr, std::string accountNr, cardType type);
 
         bool checkPIN(Card *card, std::string plainPIN);
-        float getMoneyFromAccount(std::string accountNumber);
+        float getFundsOnAccount(std::string accountNumber);
+        void getMoneyFromAccount(std::string accountNumber, float value);
 
         std::string getAccountsAsString();
         void printAccountsList();

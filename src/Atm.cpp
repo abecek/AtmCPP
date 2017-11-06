@@ -80,9 +80,11 @@ Card *Atm::getCard(){
     return this->card;
 }
 
-void Atm::discardCard()
+void Atm::pullOutCard()
 {
-
+    this->isAuthorized = false;
+    this->availableMoneyAmount = 0;
+    delete this->card;
 }
 
 void Atm::rejectCard()
@@ -135,7 +137,7 @@ float Atm::getAvailableMoney()
 {
     if(this->isAuthorized && this->card != nullptr) {
         Company *comp = supportedCompaniesList.at(this->card->getCardDistributorId());
-        this->availableMoneyAmount = comp->getMoneyFromAccount(this->card->getAccountNumber());
+        this->availableMoneyAmount = comp->getFundsOnAccount(this->card->getAccountNumber());
     }
 
     return this->availableMoneyAmount;
@@ -148,8 +150,12 @@ void Atm::addSupportedCompanyToList(Company *comp)
 
 bool Atm::makeWithdraw(unsigned int amount, bool printContribution)
 {
-    this->safe->getMoneyFromSafe(amount);
-    return true;
+    if(this->safe->getMoneyFromSafe(amount)) {
+        Company *comp = this->supportedCompaniesList.at(this->card->getCardDistributorId());
+        comp->getMoneyFromAccount(this->card->getAccountNumber(),(float) amount);
+        return true;
+    }
+    return false;
 }
 
 

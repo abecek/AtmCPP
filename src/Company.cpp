@@ -164,10 +164,16 @@ bool Company::checkPIN(Card *card, std::string plainPIN)
     return false;
 }
 
-float Company::getMoneyFromAccount(std::string accountNumber)
+float Company::getFundsOnAccount(std::string accountNumber)
 {
     Account *acc = this->getAccount(accountNumber);
     return acc->getMoneyAmount();
+}
+
+void Company::getMoneyFromAccount(std::string accountNumber, float value)
+{
+    Account *acc = this->getAccount(accountNumber);
+    acc->setMoneyAmount(acc->getMoneyAmount() - value);
 }
 
 

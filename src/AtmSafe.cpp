@@ -41,10 +41,11 @@ int AtmSafe::countContent()
         temp += (i->second * i->first);
     }
     this->moneyAmount = temp;
-    this->getMedian();
+    //this->getMedian();
     return this->moneyAmount;
 }
 
+/*
 float AtmSafe::getMedian()
 {
     std::vector<unsigned int> temp;
@@ -67,6 +68,7 @@ float AtmSafe::getMedian()
 
     return this->median;
 }
+*/
 
 bool AtmSafe::checkAmountIsPossibleToWithdraw(unsigned int amount)
 {
@@ -75,10 +77,12 @@ bool AtmSafe::checkAmountIsPossibleToWithdraw(unsigned int amount)
     return true;
 }
 
+/*
 bool AtmSafe::getMoneyFromSafe(std::map<unsigned int, unsigned int> money)
 {
     return true;
 }
+*/
 
 bool AtmSafe::getMoneyFromSafe(unsigned int amount)
 {
@@ -91,7 +95,7 @@ bool AtmSafe::getMoneyFromSafe(unsigned int amount)
                                 };
     std::map<unsigned int ,std::map<unsigned int, unsigned int>> temp2;
 
-    auto it = tempArray.end();
+    auto it = this->content.end();
     do{
         it--;
         unsigned int tempAmount = amount;
@@ -102,31 +106,32 @@ bool AtmSafe::getMoneyFromSafe(unsigned int amount)
         do{
             int tempDiv = floor(tempAmount / it2->first);
             //std::cout << tempDiv << " = " << tempAmount << " / " << it2->first << std::endl;
+            // todo: There is a bug for example with amount = 180. Algorithm is dividing 180/100 = 1, next 80/50 = 1 and
+            // and we have 30/20 = 1 with rest 10 which cant be withdrawed in any way
             if(tempDiv >= 1) {
                 temp[it2->first] = tempDiv;
                 papersCount += tempDiv;
                 tempAmount -= tempDiv*it2->first;
             }
 
-            if(it2 == tempArray.begin()) break;
+            if(it2 == this->content.begin()) break;
             it2--;
         }while(tempAmount > 0);
 
         if(tempAmount == 0) {
                 //std::cout << std::endl << "Ilosc banknotow: " << papersCount;
-                //this->printAnyContent(temp);
+                this->printAnyContent(temp);
+
                 if(this->checkIsWithdrawPossible(temp)) {
                     this->addPossibleWithdraw(papersCount, temp);
                 }
         }
 
-        if(it == tempArray.begin()) break;
+        if(it == this->content.begin()) break;
     }while(true);
 
-    this->chooseProperWithdraw();
-    //Add withdrawing from safe
-
-    return true;
+    std::map<unsigned int, unsigned int> *arrayToWithdraw = this->chooseProperWithdraw();
+    return this->proceedWithdraw(arrayToWithdraw);
 }
 
 bool AtmSafe::checkIsWithdrawPossible(std::map<unsigned int, unsigned int> &temp)
@@ -186,7 +191,6 @@ std::map<unsigned int, unsigned int>* AtmSafe::chooseProperWithdraw()
     std::map<unsigned int, unsigned int> *chosenOne = nullptr;
     std::map<unsigned int, unsigned int> values;
     unsigned index = 0;
-    this->printAnyContent2();
 
     for (const std::map<unsigned int, unsigned int> &withdraw: possibleWithdrawArray) {
         unsigned int currentValue = 0;
@@ -198,7 +202,7 @@ std::map<unsigned int, unsigned int>* AtmSafe::chooseProperWithdraw()
     }
 
     std::pair<unsigned int, unsigned int> pair = this->getPairWithMaxValue(values);
-    std::cout << pair.first << "  " << pair.second << std::endl;
+    //std::cout << pair.first << "  " << pair.second << std::endl;
 
     try {
         chosenOne = &this->possibleWithdrawArray.at(pair.first);
@@ -208,6 +212,16 @@ std::map<unsigned int, unsigned int>* AtmSafe::chooseProperWithdraw()
     }
 
     return chosenOne;
+}
+
+bool AtmSafe::proceedWithdraw(std::map<unsigned int, unsigned int> *withdrawArray)
+{
+    for(auto it = withdrawArray->begin(); it != withdrawArray->end(); it++) {
+        this->content.at(it->first) -= it->second;
+    }
+    this->possibleWithdrawArray.clear();
+
+    return true;
 }
 
 void AtmSafe::printSafe()

@@ -27,15 +27,13 @@ int main()
     CashMachine->setLocalization(AtmAddress);
     CashMachine->setOwner(AtmOwner);
     CashMachine->addSupportedCompanyToList(AtmOwner);
-
+    vector<Language> possibleLangs = CashMachine->getLanguageList();
     //CashMachine->printAtm();
     //cout << AtmAddress->toString() << endl << endl;
     //cout << AtmOwner->toString() << endl << endl;
 
-    vector<Language> possibleLangs = CashMachine->getLanguageList();
 
     Address *UserAddress1 = new Address("Polska", "Zgierz", "Losowa", "123");
-
 
     User *Client1 = new User("Piotr", "Kowalski", "", UserAddress1);
     User *Client2 = new User("Rafal", "Wszedobylski");
@@ -46,26 +44,27 @@ int main()
     Company *ClientBank = new Company("ZYX BigBank", ClientBankAddress);
 
     string accNumber1 = ClientBank->createNewAccount(1100.5);
-
     string accNumber2 = ClientBank->createNewAccount(190);
     string accNumber3 = ClientBank->createNewAccount(11.99);
 
     CashMachine->addSupportedCompanyToList(ClientBank);
-    ClientBank->printAccountsList();
 
     Company *ClientBank2 = new Company("ZYX BigBank", ClientBankAddress);
     string accNumber4  = ClientBank2->createNewAccount(350);
 
+    vector<Card*> cardsList;
     // todo: Add autogenerating cardNumber when creating card for the account and move CardOwner into Account class
     Card *card1 = ClientBank->generateCardForAccount(Client1, "1", accNumber1, cardType::credit);
-
+    cardsList.push_back(card1);
     Card *card2 = ClientBank->generateCardForAccount(Client2, "2", accNumber2, cardType::credit);
+    cardsList.push_back(card2);
     Card *card3 = ClientBank->generateCardForAccount(Client3, "3", accNumber3, cardType::payment);
+    cardsList.push_back(card3);
+
     Card *card4 = ClientBank2->generateCardForAccount(Client4, "11", accNumber4, cardType::debit);
+    cardsList.push_back(card4);
 
     CashMachine->addSupportedCompanyToList(ClientBank2);
-
-    ClientBank2->printAccountsList();
 
 
     std::map<unsigned int,unsigned int> safeContent = {
@@ -77,118 +76,153 @@ int main()
                             };
 
     CashMachine->addToSafe(&safeContent);
-    CashMachine->getSafe()->printSafe();
     //cout << endl << CashMachine->getSafe()->getMedian() << endl;
 
+    cout << endl << "Witamy w bankomacie." << endl;
 
-    cout << endl << "Witamy w bankomacie." << endl << endl;
-    CashMachine->loadCard(card2);
-    //cout << CashMachine->getCard()->toString();
+    char c1;
+    do{
+        cout << endl;
+        ClientBank->printAccountsList();
+        ClientBank2->printAccountsList();
+        CashMachine->getSafe()->printSafe();
 
-    if(CashMachine->isCardLoaded()) {
-        char c1;
-        while(c1 != ESCAPE) {
-            Language chosenLang;
-            unsigned int x = 0;
-            string plainPIN;
-            do{
-                cout << endl << "Wybierz jezyk:" << endl;
-                for(unsigned int i = 0; i < possibleLangs.size(); i++){
-                    cout << i+1 << ". - " << possibleLangs.at(i).name << endl;
-                }
-                cout << endl << "Numer: ";
-                cin >> x;
-                if(x < 1 || x > possibleLangs.size()){
-                    cout << endl << "Zle dane" << endl;
-                    continue;
-                }
+        unsigned int chosenCardId;
+        cout << endl << "Lista mozliwych kart: " << endl;
+        for(int i = 0; i < cardsList.size(); i++) {
+            cout << "Id: " << i+1 << " - AccNumber: " << cardsList.at(i)->getAccountNumber() << endl;
+        }
+        cout << "Wloz karte id: ";
+        cin >> chosenCardId;
+        try{
+            CashMachine->loadCard(cardsList.at(chosenCardId-1));
+            //cout << CashMachine->getCard()->toString();
+        }
+        catch(const std::out_of_range &err) {
+            cout << "Bledne id karty." << endl;
+        }
 
-                chosenLang = possibleLangs.at(x-1);
-                CashMachine->setLanguage(chosenLang);
-                cout << endl << "Wybrano jezyk: " << CashMachine->getLanguage().name << endl;
-
-                int i = 0;
+        if(CashMachine->isCardLoaded()) {
+            while(c1 != ESCAPE) {
+                Language chosenLang;
+                unsigned int x = 0;
+                string plainPIN;
                 do{
-                    if(i > 0) cout << "Bledny PIN." << endl;
-                    cout << "Wprowadz PIN: ";
-                    cin >> plainPIN;
-                    c1 = *"c";
-                    CashMachine->loadPlainPIN(plainPIN);
-                    i++;
-                }while(!CashMachine->checkPIN());
 
-                if(CashMachine->getIsAuthorized()) {
-                    char c2;
-                    cout << endl << "Otrzymano dostep do konta!" << endl;
-                    cout << "Wybierz czynnosc:" << endl;
-                    cout << "1 - Wyplata srodkow" << endl;
-                    cout << "2 - Wyplac konkretna kwote" << endl;
-                    cout << "3 - Wyjscie" << endl;
-                    cin >> c2;
-
-                    vector<unsigned int> amountsTab = {20, 50, 80, 100, 150, 200, 300, 400};
-                    unsigned int moneyToWithdraw = 0;
-                    unsigned int moneyToWithdrawOption = 9;
-                    if(c2 == '1') {
-
-                        bool flag = false;
-                        do{
-                            cout << "Dostepne kwoty:" << endl;
-                            for(unsigned int i = 0; i < ((amountsTab.size())/2); i++) {
-                                cout << endl << (i+1) << " - " << amountsTab[i] << "     " << (i+5) << " - " << amountsTab[i+4];
-                            }
-                            cout << endl;
-                            cin >> moneyToWithdrawOption;
-                            flag = (moneyToWithdrawOption >= 1 && moneyToWithdrawOption <= 8) ? true : false;
-                        }while(!flag);
-
-                        moneyToWithdraw = amountsTab[moneyToWithdrawOption-1];
-
+                    cout << endl << "Wybierz jezyk:" << endl;
+                    for(unsigned int i = 0; i < possibleLangs.size(); i++){
+                        cout << i+1 << ". - " << possibleLangs.at(i).name << endl;
                     }
-                    else if(c2 == '2') {
-                        cout << "Wprowadz kwote: " ;
-                        cin >> moneyToWithdraw;
-                    }
-                    else if(c2 == '3') {
-                        break;
+                    cout << endl << "Numer: ";
+                    cin >> x;
+                    if(x < 1 || x > possibleLangs.size()){
+                        cout << endl << "Zle dane" << endl;
+                        continue;
                     }
 
+                    chosenLang = possibleLangs.at(x-1);
+                    CashMachine->setLanguage(chosenLang);
+                    cout << endl << "Wybrano jezyk: " << CashMachine->getLanguage().name << endl;
 
-                        if((float)moneyToWithdraw <= CashMachine->getAvailableMoney()) {
-                            cout << "Wyplata : " << moneyToWithdraw << " z mozliwych: " << CashMachine->getAvailableMoney();
-                            char c3;
+                    int i = 0;
+                    do{
+                        if(i > 0) cout << "Bledny PIN." << endl;
+                        cout << "Wprowadz PIN: ";
+                        cin >> plainPIN;
+                        c1 = *"c";
+                        CashMachine->loadPlainPIN(plainPIN);
+                        i++;
+                    }while(!CashMachine->checkPIN());
+
+                    if(CashMachine->getIsAuthorized()) {
+                        char c2;
+                        cout << endl << "Otrzymano dostep do konta!" << endl << endl;
+
+                        cout << "Wybierz czynnosc:" << endl;
+                        cout << "1 - Wyplata srodkow" << endl;
+                        cout << "2 - Wyplac konkretna kwote" << endl;
+                        cout << "3 - Wyjscie" << endl;
+                        cin >> c2;
+
+                        vector<unsigned int> amountsTab = {20, 50, 80, 100, 150, 200, 300, 400};
+                        unsigned int moneyToWithdraw = 0;
+                        unsigned int moneyToWithdrawOption = 9;
+                        if(c2 == '1') {
+
+                            bool flag = false;
                             do{
-                                cout << endl << "Czy chcesz wydrukowac potwierdzenie wyplaty?" << endl;
-                                cout << "1 - Tak" << endl << "2 - Nie" << endl;
-                                cin >> c3;
-                            } while(!(c3 == '1' || c3 == '2'));
+                                cout << "Dostepne kwoty:" << endl;
+                                for(unsigned int i = 0; i < ((amountsTab.size())/2); i++) {
+                                    cout << endl << (i+1) << " - " << amountsTab[i] << "     " << (i+5) << " - " << amountsTab[i+4];
+                                }
+                                cout << endl;
+                                cin >> moneyToWithdrawOption;
+                                flag = (moneyToWithdrawOption >= 1 && moneyToWithdrawOption <= 8) ? true : false;
+                            }while(!flag);
+
+                            moneyToWithdraw = amountsTab[moneyToWithdrawOption-1];
+
+                        }
+                        else if(c2 == '2') {
+                            cout << "Wprowadz kwote: " ;
+                            cin >> moneyToWithdraw;
+                        }
+                        else if(c2 == '3') {
+                            break;
+                        }
+
+                            if((float)moneyToWithdraw <= CashMachine->getAvailableMoney()) {
+                                //cout << "Wyplata : " << moneyToWithdraw << " z mozliwych: " << CashMachine->getAvailableMoney();
+                                char c3 = '1';
+                                /*
+                                do{
+                                    cout << endl << "Czy chcesz wydrukowac potwierdzenie wyplaty?" << endl;
+                                    cout << "1 - Tak" << endl << "2 - Nie" << endl;
+                                    cin >> c3;
+                                } while(!(c3 == '1' || c3 == '2'));
+                                */
+
+                                bool howItWent;
+                                if(c3 == '1') {
+                                    howItWent = CashMachine->makeWithdraw((float)moneyToWithdraw, true);
+                                }
+                                else {
+                                    howItWent = CashMachine->makeWithdraw((float)moneyToWithdraw, false);
+                                }
+
+                                if(howItWent) {
+                                    cout << endl <<  "------------------------------------" << endl;
+                                    cout << "Wyplacono: " << moneyToWithdraw << " z konta, przy uzyciu karty." << endl;
+                                    cout << "------------------------------------" << endl << endl;
+                                }
 
 
-                            if(c3 == '1') {
-                                CashMachine->makeWithdraw((float)moneyToWithdraw, true);
+                                ClientBank->printAccountsList();
+                                ClientBank2->printAccountsList();
+
                             }
                             else {
-                                CashMachine->makeWithdraw((float)moneyToWithdraw, false);
+                                cout << "Brak wystarczajacych srodkow na koncie." << endl;
+                                continue;
                             }
 
-                        }
-                        else {
-                            cout << "Brak wystarczajacych srodkow na koncie." << endl;
-                            continue;
-                        }
-
-                }
-            }while(x < 1 || x > possibleLangs.size());
+                    }
+                }while(x < 1 || x > possibleLangs.size());
 
 
-            cout << endl << endl << "Nacisnij ESC, by przerwac lub inny przycisk, by kontynuowac." << endl;
-            c1 = getch();
+                cout << endl << endl << "Nacisnij ESC, by wysunac karte lub inny przycisk, by kontynuowac." << endl;
+                c1 = getch();
+            }
+
+            c1 = 55;
         }
-    }
-    else {
-        cout << "Wloz karte do bankomatu." << endl;
-    }
+        else {
+            cout << "Wloz karte do bankomatu." << endl;
+        }
 
+        cout << endl << endl << "Nacisnij ESC, by przerwac prace programu lub inny przycisk, by kontynuowac." << endl;
+        c1 = getch();
+    }while(c1 != ESCAPE);
 
 
     return 0;

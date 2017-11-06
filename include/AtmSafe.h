@@ -21,14 +21,16 @@ class AtmSafe
         std::string getCurrency();
         void addContent(std::map<unsigned int,unsigned int> *content);
         int countContent();
-        float getMedian();
+        //Unused function
+        //float getMedian();
 
         bool checkAmountIsPossibleToWithdraw(unsigned int amount);
-        bool getMoneyFromSafe(std::map<unsigned int,unsigned int> money);
+        //bool getMoneyFromSafe(std::map<unsigned int,unsigned int> money);
         bool getMoneyFromSafe(unsigned int amount);
         bool checkIsWithdrawPossible(std::map<unsigned int, unsigned int> &temp);
         void addPossibleWithdraw(unsigned int papersCount, std::map<unsigned int, unsigned int> &temp);
         std::map<unsigned int, unsigned int>* chooseProperWithdraw();
+        bool proceedWithdraw(std::map<unsigned int, unsigned int> *withdrawArray);
 
         void printSafe();
         void printAnyContent(std::map<unsigned int, unsigned int> &temp);
