@@ -1,6 +1,5 @@
 #include "Atm.h"
-#include <string>
-#include <stdexcept>
+
 
 Atm::Atm()
 {
@@ -120,7 +119,7 @@ bool Atm::checkPIN()
 
         this->isAuthorized = company->checkPIN(this->card, this->plainPin);
     }
-    catch(const std::out_of_range &oor) {
+    catch(const std::out_of_range &err) {
         std::cout << "Your card is not supported in this ATM." << std::endl;
     }
 
