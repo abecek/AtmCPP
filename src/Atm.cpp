@@ -3,6 +3,7 @@
 
 Atm::Atm()
 {
+    /*
     Language pl;
     pl.name = "polski";
     pl.shortCut = "pl";
@@ -12,15 +13,17 @@ Atm::Atm()
 
     this->langList.push_back(pl);
     this->langList.push_back(eng);
+    */
 
     this->safe = new AtmSafe();
 }
 
-std::vector<Language> Atm::getLanguageList()
+std::map<std::string, std::map<std::string, std::string>>* Atm::getLanguageList()
 {
-    return this->langList;
+    return &this->langList;
 }
 
+/*
 Language Atm::getLanguage()
 {
     return this->lang;
@@ -30,6 +33,7 @@ void Atm::setLanguage(Language lg)
 {
     this->lang = lg;
 }
+*/
 
 void Atm::setId(int id)
 {

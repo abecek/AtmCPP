@@ -226,7 +226,8 @@ bool AtmSafe::proceedWithdraw(std::map<unsigned int, unsigned int> *withdrawArra
 
 void AtmSafe::printSafe()
 {
-    std::cout << "Atmsafe - moneyAmount: " << this->getMoneyAmount() << std::endl;
+    std::cout << "Atmsafe - moneyValue: " << this->getMoneyAmount() << std::endl;
+    std::cout << "Nominal Value - Count" << std::endl;
     auto it = this->content.begin();
     for(int i = 0; it != this->content.end(); i++) {
         std::cout << it->first << " - " << it->second << std::endl;
